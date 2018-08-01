@@ -1,0 +1,132 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+    <!--<meta charset="UTF-8">-->
+    <!--<title>Title</title>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+
+    <title>FHIR facade</title>
+    <link rel="stylesheet" href="../static/css/form.css">
+
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+    <h3>Query Parameters</h3>
+    <div>
+        <form class="form-horizontal" th:object="${patient}" th:action="@{/patient}">
+
+            <div class="form-group">
+                <!--<label class="col-sm-1 control-label">ID:</label>-->
+                <!--<div class="col-sm-4">-->
+                    <!--<input type="text" class="form-control" th:field="*{id}"/>-->
+                <!--</div>-->
+                <label class="col-sm-2 control-label">NHS number:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{identifier}"/>
+                </div>
+                <label class="col-sm-2 control-label">Family:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{family}"/>
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-2 control-label">Family:</label>-->
+                <!--<div class="col-sm-4">-->
+                    <!--<input type="text" class="form-control" th:field="*{family}"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Given:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{given}"/>
+                </div>
+                <label class="col-sm-2 control-label">Gender:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{gender}"/>
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-2 control-label">Gender:</label>-->
+                <!--<div class="col-sm-5">-->
+                    <!--<input type="text" class="form-control" th:field="*{gender}"/>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-2 control-label">Email:</label>-->
+                <!--<div class="col-sm-5">-->
+                    <!--<input type="text" class="form-control" th:field="*{email}"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Full Name:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{name}"/>
+                </div>
+                <label class="col-sm-2 control-label">Birthdate:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{birthdate}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Email:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" th:field="*{email}"/>
+                </div>
+
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-2 control-label">Birthdate:</label>-->
+                <!--<div class="col-sm-5">-->
+                    <!--<input type="text" class="form-control" th:field="*{birthdate}"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-1 control-label">NHS number:</label>-->
+                <!--<div class="col-sm-4">-->
+                    <!--<input type="text" class="form-control" th:field="*{identifier}"/>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="row">-->
+                <!--<button type="submit" class="btn btn-default">Submit</button>-->
+            <!--</div>-->
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <button type="button" class="btn btn-success" style="float: right " onclick="location.href='/patient/all'">Get All</button>
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" class="btn btn-info" style="float: right">Submit</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+
+    <h3>Patient Details</h3>
+    <div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <!--<label class="col-sm-2 control-label">Product Id:</label>-->
+                <div class="col-sm-12">
+                    <pre class="form-control-static" th:text="${patientinfo}">Patient</pre>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
