@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.fhir.facade</groupId>
-	<artifactId>fhir_facade</artifactId>
+	<artifactId>fhirfacade</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>fhir_facade</name>
+	<name>fhirfacade</name>
 	<description>UCL 2018 SSE Summer Project</description>
 
 	<parent>
