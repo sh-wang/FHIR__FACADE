@@ -2,6 +2,8 @@ package com.fhir.facade.fhir_facade.conversion;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.dstu3.model.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -147,6 +149,15 @@ public class QuestionnaireResponseConversion {
         } catch (JSONException e){
             e.printStackTrace();
         }
+
+        FhirContext ctx = FhirContext.forDstu3();
+
+        String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
+        IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
+        MethodOutcome outcome = client.create().resource(questionnaireResponse).execute();
+
+        System.out.println(outcome.getId());
+        System.out.println(outcome.getCreated());
 
         return  questionnaireResponse;
     }
