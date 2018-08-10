@@ -119,14 +119,14 @@ public class PatientConversion {
             e.printStackTrace();
         }
 
-        FhirContext ctx = FhirContext.forDstu3();
-
-        String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
-        IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
-        MethodOutcome outcome = client.create().resource(patient).execute();
-
-        System.out.println(outcome.getId());
-        System.out.println(outcome.getCreated());
+//        FhirContext ctx = FhirContext.forDstu3();
+//
+//        String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
+//        IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
+//        MethodOutcome outcome = client.create().resource(patient).execute();
+//
+//        System.out.println(outcome.getId());
+//        System.out.println(outcome.getCreated());
 
 
 
