@@ -61,6 +61,7 @@ public class ProcedureConversion {
             codeableConcept.addCoding().setCode(jsonObject.get("localCode").toString()).
                     setDisplay(jsonObject.get("name").toString().substring(1, jsonObject.get("name").toString().length()));
             procedure.setCode(codeableConcept);
+            System.out.println("ppppp:"+procedure);
         }catch (JSONException e){
             e.printStackTrace();
         }

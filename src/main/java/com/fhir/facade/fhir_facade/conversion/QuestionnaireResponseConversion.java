@@ -62,21 +62,21 @@ public class QuestionnaireResponseConversion {
             questionnaireResponse.setId(jsonObject.get("id").toString());
 
             //add status
-            if (jsonObject.get("status").equals("STARTED")){
-                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
-            }
-            if (jsonObject.get("status").equals("UNINITIALISED")){
-                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
-            }
-            if (jsonObject.get("status").equals("COMPLETED")){
-                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-            }
-            if (jsonObject.get("status").equals("UNKNOWN")){
-                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
-            }
-            if (jsonObject.get("status").equals("PENDING")){
-                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
-            }
+//            if (jsonObject.get("status").equals("STARTED")){
+//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
+//            }
+//            if (jsonObject.get("status").equals("UNINITIALISED")){
+//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
+//            }
+//            if (jsonObject.get("status").equals("COMPLETED")){
+//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+//            }
+//            if (jsonObject.get("status").equals("UNKNOWN")){
+//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
+//            }
+//            if (jsonObject.get("status").equals("PENDING")){
+//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
+//            }
 
             //add patient
             JSONObject jsonPatient = new JSONObject(jsonObject.get("patient").toString());
@@ -90,12 +90,21 @@ public class QuestionnaireResponseConversion {
             JSONObject jsonFollowupPlan = new JSONObject(jsonCareEvent.get("followupPlan").toString());
             JSONObject jsonProcedureBooking = new JSONObject(jsonFollowupPlan.get("procedureBooking").toString());
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(defaultPath + "procedures/"
-                    +jsonProcedureBooking.get("id"), String.class);
-            JSONObject jsonProcedure = new JSONObject(response.getBody());
-            Procedure procedure = procedureConversion.procedureConversion(jsonProcedure);
+            ResponseEntity<String> response = restTemplate.getForEntity(defaultPath + "_search/procedures?query="
+                    +jsonProcedureBooking.get("primaryProcedure"), String.class);
+
+            JSONArray jsonProcedure = new JSONArray(response.getBody());
+
+            Procedure procedure = new Procedure();
+            JSONObject jPro = (JSONObject) jsonProcedure.get(0);
+            procedure.setStatus(Procedure.ProcedureStatus.UNKNOWN);
+            CodeableConcept codeableConcept = new CodeableConcept();
+            codeableConcept.addCoding().setCode(jPro.get("localCode").toString()).
+                        setDisplay(jPro.get("name").toString().substring(1, jPro.get("name").toString().length()));
+            procedure.setCode(codeableConcept);
             Reference refePr = new Reference(procedure);
             questionnaireResponse.addParent(refePr);
+
 
             //add completed date
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -120,8 +129,10 @@ public class QuestionnaireResponseConversion {
             // add patient's questionnaire need to accomplish, in the format of fhir standard, json format.
             JSONObject jsonQuestionnaire = new JSONObject(jsonObject.get("questionnaire").toString());
 
-            Questionnaire questionnaire = questionnaireConversion.questionnaireConversion(jsonQuestionnaire);
-
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setStatus(Enumerations.PublicationStatus.ACTIVE);
+            questionnaire.setName(jsonQuestionnaire.get("name").toString());
+            questionnaire.setCopyright(jsonQuestionnaire.get("copyright").toString());
             Reference refeQu = new Reference(questionnaire);
             questionnaireResponse.setQuestionnaire(refeQu);
 
@@ -144,7 +155,9 @@ public class QuestionnaireResponseConversion {
 
 
             String author = jsonObject.get("createdBy").toString();
-            Reference authorRef = new Reference(author);
+            RelatedPerson relatedPerson = new RelatedPerson();
+            relatedPerson.addName().setFamily(author);
+            Reference authorRef = new Reference(relatedPerson);
             questionnaireResponse.setAuthor(authorRef);
         } catch (JSONException e){
             e.printStackTrace();
