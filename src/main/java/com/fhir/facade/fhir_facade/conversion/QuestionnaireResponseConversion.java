@@ -83,7 +83,7 @@ public class QuestionnaireResponseConversion {
             }
 
             //add patient
-            JSONObject jsonPatient = new JSONObject(jsonObject.get("patient").toString());
+            JSONObject jsonPatient = jsonObject.getJSONObject("patient");
             Patient patient = patientConversion.patientConversion(jsonPatient);
 
             Reference refePa = new Reference(patient);
@@ -132,7 +132,7 @@ public class QuestionnaireResponseConversion {
 
             // display each question and its corresponding answer for the questionnaire.
             if(!jsonObject.get("responseItems").toString().equals("null")){
-                JSONArray jsonResponseItems = new JSONArray(jsonObject.get("responseItems").toString());
+                JSONArray jsonResponseItems = jsonObject.getJSONArray("responseItems");
                 for(int i=0; i<jsonResponseItems.length(); i++){
                     IntegerType j = new IntegerType();
                     j.setValue((Integer) jsonResponseItems.getJSONObject(i).get("value"));

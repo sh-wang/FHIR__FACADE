@@ -62,7 +62,7 @@ public class PatientConversion {
     public Patient patientConversion(JSONObject jsonObject){
         Patient patient = new Patient();
         try {
-            patient.setId(jsonObject.get("id").toString().replaceAll(".0+?$", ""));
+//            patient.setId(jsonObject.get("id").toString().replaceAll(".0+?$", ""));
             // add name
             patient.addName().setFamily(jsonObject.get("familyName").toString()).addGiven(jsonObject.get("givenName").toString());
             // add dob
