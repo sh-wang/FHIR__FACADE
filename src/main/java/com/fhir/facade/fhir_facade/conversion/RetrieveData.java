@@ -32,7 +32,7 @@ public class RetrieveData {
     }
 
 
-    private ResponseEntity<String> getResponse(String url){
+    public static ResponseEntity<String> getResponse(String url){
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
