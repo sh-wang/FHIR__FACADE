@@ -24,6 +24,12 @@ public class PatientConversion {
     private IParser p =ctx.newJsonParser().setPrettyPrint(true);
 
     private String defaultPath = "http://localhost:8080/api/";
+    private String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
+
+    private IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
+
+    private RestTemplate restTemplate = new RestTemplate();
+
 
     public String conversionSingle(String rawData){
         try {
@@ -93,7 +99,6 @@ public class PatientConversion {
             }
 
             // add address
-            RestTemplate restTemplate = new RestTemplate();
             String addressUrl = defaultPath + "addresses/" + jsonObject.get("id").toString();
             ResponseEntity<String> response;
             try {
@@ -119,16 +124,10 @@ public class PatientConversion {
             e.printStackTrace();
         }
 
-//        FhirContext ctx = FhirContext.forDstu3();
-//
-//        String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
-//        IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
 //        MethodOutcome outcome = client.create().resource(patient).execute();
 //
 //        System.out.println(outcome.getId());
 //        System.out.println(outcome.getCreated());
-
-
 
         return  patient;
     }

@@ -14,10 +14,12 @@ import org.json.JSONObject;
 public class QuestionnaireConversion {
     public  QuestionnaireConversion(){}
 
+    private String defaultPath = "http://localhost:8080/api/";
+    private  String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
+
     private FhirContext ctx = FhirContext.forDstu3();
     private IParser p =ctx.newJsonParser().setPrettyPrint(true);
-
-    private String defaultPath = "http://localhost:8080/api/";
+    private IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
 
 
     public String conversionSingle(String rawData){
@@ -74,14 +76,8 @@ public class QuestionnaireConversion {
             e.printStackTrace();
         }
 
-        FhirContext ctx = FhirContext.forDstu3();
-
-        String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
-        IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
-        MethodOutcome outcome = client.create().resource(questionnaire).execute();
-
-        System.out.println(outcome.getId());
-        System.out.println(outcome.getCreated());
+//        MethodOutcome outcome = client.create().resource(questionnaire).execute();
+//        System.out.println("link: " + outcome.getId() + "\n" + outcome.getCreated());
 
         return  questionnaire;
     }

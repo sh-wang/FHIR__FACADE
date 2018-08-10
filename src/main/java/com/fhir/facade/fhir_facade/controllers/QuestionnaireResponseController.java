@@ -28,8 +28,7 @@ public class QuestionnaireResponseController {
     }
 
     @RequestMapping("/questionnaireresponse")
-    public String searchQuestionanireResponse(Model model, Integer identifier
-            , String parent,
+    public String searchQuestionanireResponse(Model model, Integer identifier, String parent,
                                               String questionnaire, String status,
                                               String patient, String subject,
                                               String authored, String author) throws JSONException {
@@ -66,7 +65,7 @@ public class QuestionnaireResponseController {
             isNull = false;
         }
         if(subject!=null &&  !subject.equals("")){
-            url += "subject="+subject+"&";
+            url += "familyName="+subject+"&";
             isNull = false;
         }
         if(authored!=null && !authored.equals("")){
@@ -95,7 +94,7 @@ public class QuestionnaireResponseController {
         String url = allUrl;
         model.addAttribute("qr", new QuestionnaireResponse());
         temp.setUrl(url);
-        System.out.println(temp.convertQuestionnnaireResponse());
+//        System.out.println(temp.convertQuestionnnaireResponse());
         model.addAttribute("qrsource",temp.convertQuestionnnaireResponse());
         return "qrform";
     }

@@ -22,10 +22,14 @@ public class QuestionnaireResponseConversion {
     private QuestionnaireConversion questionnaireConversion= new QuestionnaireConversion();
     public QuestionnaireResponseConversion(){}
 
+    private String defaultPath = "http://localhost:8080/api/";
+    private String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
+
+    private RestTemplate restTemplate = new RestTemplate();
+
     private FhirContext ctx = FhirContext.forDstu3();
     private IParser p =ctx.newJsonParser().setPrettyPrint(true);
-
-    private String defaultPath = "http://localhost:8080/api/";
+    private IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
 
     public String conversionSingle(String rawData){
         try{
@@ -62,21 +66,21 @@ public class QuestionnaireResponseConversion {
             questionnaireResponse.setId(jsonObject.get("id").toString());
 
             //add status
-//            if (jsonObject.get("status").equals("STARTED")){
-//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
-//            }
-//            if (jsonObject.get("status").equals("UNINITIALISED")){
-//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
-//            }
-//            if (jsonObject.get("status").equals("COMPLETED")){
-//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
-//            }
-//            if (jsonObject.get("status").equals("UNKNOWN")){
-//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
-//            }
-//            if (jsonObject.get("status").equals("PENDING")){
-//                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
-//            }
+            if (jsonObject.get("status").equals("STARTED")){
+                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
+            }
+            if (jsonObject.get("status").equals("UNINITIALISED")){
+                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.STOPPED);
+            }
+            if (jsonObject.get("status").equals("COMPLETED")){
+                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+            }
+            if (jsonObject.get("status").equals("UNKNOWN")){
+                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.STOPPED);
+            }
+            if (jsonObject.get("status").equals("PENDING")){
+                questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
+            }
 
             //add patient
             JSONObject jsonPatient = new JSONObject(jsonObject.get("patient").toString());
@@ -86,17 +90,15 @@ public class QuestionnaireResponseConversion {
             questionnaireResponse.setSubject(refePa);
 
             //add procedure
-            JSONObject jsonCareEvent = new JSONObject(jsonObject.get("careEvent").toString());
-            JSONObject jsonFollowupPlan = new JSONObject(jsonCareEvent.get("followupPlan").toString());
-            JSONObject jsonProcedureBooking = new JSONObject(jsonFollowupPlan.get("procedureBooking").toString());
-            RestTemplate restTemplate = new RestTemplate();
+            JSONObject jsonProcedureBooking = jsonObject.getJSONObject("careEvent").
+                    getJSONObject("followupPlan").getJSONObject("procedureBooking");
             ResponseEntity<String> response = restTemplate.getForEntity(defaultPath + "_search/procedures?query="
                     +jsonProcedureBooking.get("primaryProcedure"), String.class);
 
             JSONArray jsonProcedure = new JSONArray(response.getBody());
 
             Procedure procedure = new Procedure();
-            JSONObject jPro = (JSONObject) jsonProcedure.get(0);
+            JSONObject jPro = jsonProcedure.getJSONObject(0);
             procedure.setStatus(Procedure.ProcedureStatus.UNKNOWN);
             CodeableConcept codeableConcept = new CodeableConcept();
             codeableConcept.addCoding().setCode(jPro.get("localCode").toString()).
@@ -109,30 +111,22 @@ public class QuestionnaireResponseConversion {
             //add completed date
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
-            if(jsonObject.get("completedDate").toString().equals("null")){
-                try {
-                    date = format.parse("2020-01-01");
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }else{
+            if(!jsonObject.get("completedDate").toString().equals("null")) {
                 try {
                     date = format.parse(jsonObject.get("completedDate").toString());
+                    questionnaireResponse.setAuthored(date);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
-            questionnaireResponse.setAuthored(date);
-
-
 
             // add patient's questionnaire need to accomplish, in the format of fhir standard, json format.
             JSONObject jsonQuestionnaire = new JSONObject(jsonObject.get("questionnaire").toString());
 
             Questionnaire questionnaire = new Questionnaire();
-            questionnaire.setStatus(Enumerations.PublicationStatus.ACTIVE);
-            questionnaire.setName(jsonQuestionnaire.get("name").toString());
-            questionnaire.setCopyright(jsonQuestionnaire.get("copyright").toString());
+            questionnaire.setStatus(Enumerations.PublicationStatus.ACTIVE).
+                    setName(jsonQuestionnaire.get("name").toString()).
+                    setCopyright(jsonQuestionnaire.get("copyright").toString());
             Reference refeQu = new Reference(questionnaire);
             questionnaireResponse.setQuestionnaire(refeQu);
 
@@ -163,14 +157,9 @@ public class QuestionnaireResponseConversion {
             e.printStackTrace();
         }
 
-        FhirContext ctx = FhirContext.forDstu3();
 
-        String serverBaseUrl = "http://hapi.fhir.org/baseDstu3";
-        IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
-        MethodOutcome outcome = client.create().resource(questionnaireResponse).execute();
-
-        System.out.println(outcome.getId());
-        System.out.println(outcome.getCreated());
+//        MethodOutcome outcome = client.create().resource(questionnaireResponse).execute();
+//        System.out.println("link: " + outcome.getId() + "\n" + outcome.getCreated());
 
         return  questionnaireResponse;
     }
