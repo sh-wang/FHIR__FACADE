@@ -78,11 +78,7 @@
 			<artifactId>hapi-fhir-client</artifactId>
 			<version>3.4.0</version>
 		</dependency>
-		<dependency>
-			<groupId>io.gatling.highcharts</groupId>
-			<artifactId>gatling-charts-highcharts</artifactId>
-			<version>2.3.1</version>
-		</dependency>
+
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-json</artifactId>
@@ -91,6 +87,13 @@
 			<groupId>com.vaadin.external.google</groupId>
 			<artifactId>android-json</artifactId>
 			<version>0.0.20131108.vaadin1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.gatling.highcharts/gatling-charts-highcharts -->
+		<dependency>
+			<groupId>io.gatling.highcharts</groupId>
+			<artifactId>gatling-charts-highcharts</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 	</dependencies>
 
@@ -104,28 +107,35 @@
                 <groupId>io.gatling</groupId>
                 <artifactId>gatling-maven-plugin</artifactId>
                 <version>2.2.4</version>
-                <configuration>
-                    <configFolder>src/test/gatling/conf</configFolder>
-                    <dataFolder>src/test/gatling/user-files/data</dataFolder>
-                    <resultsFolder>target/gatling/results/${maven.build.timestamp}/</resultsFolder>
-                    <bodiesFolder>src/test/gatling/user-files/bodies</bodiesFolder>
-                    <simulationsFolder>src/test/gatling/user-files/simulations</simulationsFolder>
-                    <!-- If uncommented, these arguments below will be applied to all your gatling tests -->
-                    <!--<jvmArgs>
-                        <jvmArg>-Dusers=100</jvmArg>
-                        <jvmArg>-Dramp=1</jvmArg>
-                    </jvmArgs>-->
-                    <!--
+				<configuration>
+					<configFolder>${project.basedir}/src/test/resources/conf</configFolder>
+					<dataFolder>${project.basedir}/src/test/resources/data</dataFolder>
+					<resultsFolder>${project.basedir}/target/gatling/results</resultsFolder>
+					<bodiesFolder>${project.basedir}/src/test/resources/bodies</bodiesFolder>
+					<simulationsFolder>${project.basedir}/src/test/scala</simulationsFolder>
+					<runDescription>This-is-the-run-description</runDescription>
+					<!--    <noReports>false</noReports> -->
+					<!--   <reportsOnly>directoryName</reportsOnly> -->
+					<!--   <simulationClass>foo.Bar</simulationClass> -->
+					<!--   <jvmArgs> -->
+					<!--     <jvmArg>-DmyExtraParam=foo</jvmArg> -->
+					<!--   </jvmArgs> -->
+					<!--    <fork>true</fork> -->
+					<!--    <propagateSystemProperties>true</propagateSystemProperties> -->
+					<!--   <failOnError>true</failOnError> -->
+
+					<!--
                     This will run multiple simulations one by one. Useful when doing Gatling
                     tests in CI.
                     -->
-                    <runMultipleSimulations>true</runMultipleSimulations>
-                    <!--
+					<!--<runMultipleSimulations>true</runMultipleSimulations>-->
+					<!--
                     To run only one simulation, you need to disable the "runMultipleSimulations"
                     above, and write the name of your simulation below.
                     -->
-                    <!--<simulationClass>WriteTheNameOfYourGatlingSimulation</simulationClass>-->
-                </configuration>
+					<!--<simulationClass>WriteTheNameOfYourGatlingSimulation</simulationClass>-->
+					<simulationClass>PatientGatlingTest</simulationClass>
+				</configuration>
             </plugin>
 		</plugins>
 	</build>
