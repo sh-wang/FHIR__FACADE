@@ -93,8 +93,8 @@ public class QuestionnaireResponseController {
     public String getAll(Model model){
         String url = allUrl;
         model.addAttribute("qr", new QuestionnaireResponse());
+        System.out.println(url);
         temp.setUrl(url);
-//        System.out.println(temp.convertQuestionnnaireResponse());
         model.addAttribute("qrsource",temp.convertQuestionnnaireResponse());
         return "qrform";
     }

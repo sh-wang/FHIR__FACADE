@@ -73,6 +73,7 @@ public class PatientController {
     public String getAllPatient(Model model){
         String url = getAllUrl;
         model.addAttribute("patient", new Patient());
+        System.out.println(url);
         temp.setUrl(url);
         model.addAttribute("patientinfo",temp.convertPatient());
 

@@ -48,14 +48,19 @@ public class QuestionnaireResponseConversion {
             JSONArray jsonArray = new JSONArray(rawData);
             JSONArray FHIRarray = new JSONArray();
 
-            for(int i = 0; i < jsonArray.length(); i++){
-                FHIRarray.put(new JSONObject(p.encodeResourceToString
-                        (questionnaireResponseConversion(jsonArray.getJSONObject(i)))));
+            try {
+                for(int i = 0; i < jsonArray.length(); i++){
+                    FHIRarray.put(new JSONObject(p.encodeResourceToString
+                            (questionnaireResponseConversion(jsonArray.getJSONObject(i)))));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                return "Conversion error, please try again";
             }
             return FHIRarray.toString(4);
         }catch (JSONException e){
             e.printStackTrace();
-            return "conversion error";
+            return "Conversion error";
         }
     }
 
