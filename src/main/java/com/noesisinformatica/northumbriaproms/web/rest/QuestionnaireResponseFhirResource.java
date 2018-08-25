@@ -54,6 +54,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.spring.web.json.Json;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -120,44 +121,60 @@ public class QuestionnaireResponseFhirResource {
         if (followupAction == null){return null;}
         org.hl7.fhir.dstu3.model.QuestionnaireResponse questionnaireResponse=
             new org.hl7.fhir.dstu3.model.QuestionnaireResponse();
+        // add id
         questionnaireResponse.setId(id.toString());
 
-//        questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
+        // add status
         if (followupAction.getStatus().equals(ActionStatus.STARTED)){
             questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
         }
         if (followupAction.getStatus().equals(ActionStatus.UNINITIALISED)){
-            questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
+            questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.STOPPED);
         }
         if (followupAction.getStatus().equals(ActionStatus.COMPLETED)){
             questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.COMPLETED);
         }
         if (followupAction.getStatus().equals(ActionStatus.UNKNOWN)){
-            questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.NULL);
+            questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.STOPPED);
         }
         if (followupAction.getStatus().equals(ActionStatus.PENDING)){
             questionnaireResponse.setStatus(QuestionnaireResponse.QuestionnaireResponseStatus.INPROGRESS);
         }
 
+        // add patient
         org.hl7.fhir.dstu3.model.Patient patientFHIR = patientFhirResource.getPatientResource(
             followupAction.getPatient().getId());
-        org.hl7.fhir.dstu3.model.Reference refePa = new org.hl7.fhir.dstu3.model.Reference(patientFHIR);
-        questionnaireResponse.setSubject(refePa);
+        org.hl7.fhir.dstu3.model.Reference refPat = new org.hl7.fhir.dstu3.model.Reference(patientFHIR);
+        questionnaireResponse.setSubject(refPat);
 
+        // add procedure
         Procedure procedureFHIR = procedureFhirResource.getProcedureResource(followupAction.getCareEvent()
             .getFollowupPlan().getProcedureBooking().getId());
-        org.hl7.fhir.dstu3.model.Reference refePr = new org.hl7.fhir.dstu3.model.Reference(procedureFHIR);
-        questionnaireResponse.addParent(refePr);
+        org.hl7.fhir.dstu3.model.Reference refPro = new org.hl7.fhir.dstu3.model.Reference(procedureFHIR);
+        questionnaireResponse.addParent(refPro);
 
         //add completed date
-        try{
-            questionnaireResponse.setAuthored(Date.from(followupAction.getCompletedDate().
-                atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        }catch (Exception e){ }
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        if(!followupAction.getCompletedDate().equals("null")){
+            try{
+                date = format.parse(followupAction.getCompletedDate().toString());
+                questionnaireResponse.setAuthored(date);
+            }catch (ParseException e){
+                e.printStackTrace();
+            }
+        }
+//        try{
+//            questionnaireResponse.setAuthored(Date.from(followupAction.getCompletedDate().
+//                atStartOfDay(ZoneId.systemDefault()).toInstant()));
+//        }catch (Exception e){ }
 
         // add patient's questionnaire need to accomplish, in the format of fhir standard, json format.
         org.hl7.fhir.dstu3.model.Questionnaire questionnaireFHIR = questionnaireFhirResource
             .getQuestionnaireResource(followupAction.getQuestionnaire().getId());
+        questionnaireFHIR.setStatus(Enumerations.PublicationStatus.ACTIVE).
+            setName(questionnaireFHIR.getName()).
+            setCopyright(questionnaireFHIR.getCopyright());
         org.hl7.fhir.dstu3.model.Reference refeQu = new org.hl7.fhir.dstu3.model.Reference(questionnaireFHIR);
         questionnaireResponse.setQuestionnaire(refeQu);
 
@@ -182,7 +199,10 @@ public class QuestionnaireResponseFhirResource {
         }
 
         String author = followupAction.getCreatedBy();
-        Reference authorRef = new Reference(author);
+        RelatedPerson relatedPerson = new RelatedPerson();
+        relatedPerson.addName().setFamily(author);
+
+        Reference authorRef = new Reference(relatedPerson);
         questionnaireResponse.setAuthor(authorRef);
 
         return questionnaireResponse;
