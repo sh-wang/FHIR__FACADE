@@ -2,12 +2,13 @@ package com.fhir.facade.fhir_facade.conversion;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.dstu3.model.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,10 +32,10 @@ public class QuestionnaireResponseConversion {
     private IParser p =ctx.newJsonParser().setPrettyPrint(true);
     private IGenericClient client = ctx.newRestfulGenericClient(serverBaseUrl);
 
-    public String conversionSingle(String rawData){
+    public String conversionSingle(String rawData, HttpEntity<String> requestEntity){
         try{
             JSONObject jsonObject = new JSONObject(rawData);
-            QuestionnaireResponse questionnaireResponse = questionnaireResponseConversion(jsonObject);
+            QuestionnaireResponse questionnaireResponse = questionnaireResponseConversion(jsonObject, requestEntity);
             String encode = p.encodeResourceToString(questionnaireResponse);
             return encode;
         } catch (JSONException e){
@@ -43,7 +44,7 @@ public class QuestionnaireResponseConversion {
         }
     }
 
-    public String conversionArray(String rawData){
+    public String conversionArray(String rawData, HttpEntity<String> requestEntity){
         try {
             JSONArray jsonArray = new JSONArray(rawData);
             JSONArray FHIRarray = new JSONArray();
@@ -51,7 +52,7 @@ public class QuestionnaireResponseConversion {
             try {
                 for(int i = 0; i < jsonArray.length(); i++){
                     FHIRarray.put(new JSONObject(p.encodeResourceToString
-                            (questionnaireResponseConversion(jsonArray.getJSONObject(i)))));
+                            (questionnaireResponseConversion(jsonArray.getJSONObject(i), requestEntity))));
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -64,7 +65,7 @@ public class QuestionnaireResponseConversion {
         }
     }
 
-    private QuestionnaireResponse questionnaireResponseConversion(JSONObject jsonObject){
+    private QuestionnaireResponse questionnaireResponseConversion(JSONObject jsonObject, HttpEntity<String> requestEntity){
         QuestionnaireResponse questionnaireResponse = new QuestionnaireResponse();
         try {
             //add id
@@ -97,8 +98,10 @@ public class QuestionnaireResponseConversion {
             //add procedure
             JSONObject jsonProcedureBooking = jsonObject.getJSONObject("careEvent").
                     getJSONObject("followupPlan").getJSONObject("procedureBooking");
-            ResponseEntity<String> response = restTemplate.getForEntity(defaultPath + "_search/procedures?query="
-                    +jsonProcedureBooking.get("primaryProcedure"), String.class);
+//            ResponseEntity<String> response = restTemplate.getForEntity(defaultPath + "_search/procedures?query="
+//                    +jsonProcedureBooking.get("primaryProcedure"), String.class);
+            ResponseEntity<String> response = restTemplate.exchange(defaultPath + "_search/procedures?query="
+                    +jsonProcedureBooking.get("primaryProcedure"), HttpMethod.GET, requestEntity, String.class);
 
             JSONArray jsonProcedure = new JSONArray(response.getBody());
 

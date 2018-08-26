@@ -20,7 +20,7 @@ public class QuestionnaireResponseController {
 
     private String defaultUrl="http://localhost:8080/api/search/Questionnaire-response?";
     private String allUrl="http://localhost:8080/api/search/Questionnaire-response";
-    private RetrieveData temp = new RetrieveData();
+    private RetrieveData temp = new RetrieveData("questionnaireResponse");
 
     public void setQuestionnaireResponseConversion(QuestionnaireResponseConversion questionnaireResponseConversion, ProcedureConversion procedureConversion) {
         this.questionnaireResponseConversion = questionnaireResponseConversion;

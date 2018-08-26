@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class ProcedureController {
     //    private ProcedureConversion procedureConversion;
-    private RetrieveData temp = new RetrieveData();
+    private RetrieveData temp = new RetrieveData("procedure");
     private String getUrl="http://localhost:8080/api/procedures/";
 
 //    public void setProcedureConversion(ProcedureConversion procedureConversion){

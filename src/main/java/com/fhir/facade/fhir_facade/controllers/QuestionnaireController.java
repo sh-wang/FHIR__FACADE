@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class QuestionnaireController {
     //    private QuestionnaireConversion questionnaireConversion;
-    private RetrieveData temp = new RetrieveData();
+    private RetrieveData temp = new RetrieveData("questionnaire");
     private String getUrl="http://localhost:8080/api/questionnaires/";
 
 //    public void setQuestionnaireConversion(QuestionnaireConversion questionnaireConversion){

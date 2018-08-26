@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PatientController {
     private PatientConversion patientConversion;
-    private RetrieveData temp = new RetrieveData();
+    private RetrieveData temp = new RetrieveData("patient");
 
     private String defaultUrl="http://localhost:8080/api/search/patients?";
     private String getAllUrl="http://localhost:8080/api/patients";
